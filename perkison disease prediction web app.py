@@ -32,16 +32,11 @@ def download_file(url, filename):
 parkinsons_model_url = "https://github.com/mohanalytic/project-deployment/blob/072e96e48abdc3b471a80a84b8604f61fa50a42b/parkinsons_model.pkl"
 
 # Download model files if they do not exist
-
 if not os.path.exists('parkinsons_model.pkl'):
     download_file(parkinsons_model_url, 'parkinsons_model.pkl')
 
 # Check if model files exist and load them
 try:
-
-    
-
-        
     if os.path.exists('parkinsons_model.pkl'):
         parkinsons_model = pickle.load(open('parkinsons_model.pkl', 'rb'))
     else:
@@ -49,30 +44,25 @@ try:
 except Exception as e:
     st.error(f"Error loading model files: {e}")
 
-
-
-
 # Creating a function for prediction
-def perkison_disease_prediction(input_data):
-    
+def parkinsons_disease_prediction(input_data):
     # Change the input data into numpy array
     input_data_as_numpy_array = np.asarray(input_data, dtype=float)
 
     # Reshape the numpy array as we are predicting for only one instance
     input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
 
-    prediction = loaded_model.predict(input_data_reshaped)
+    prediction = parkinsons_model.predict(input_data_reshaped)
 
     if prediction[0] == 0:
-        return 'The Person does not have perkison Disease'
+        return 'The Person does not have Parkinson\'s Disease'
     else:
-        return 'The Person has perkison Disease'
-    
+        return 'The Person has Parkinson\'s Disease'
+
 def main():
-    
-    
     # Giving title for our webpage
-    st.title('PERKISON DISEASE PREDICTION WEB APP')
+    st.title('Parkinson\'s Disease Prediction Web App')
+
     # Getting input data from user
     MDVP_Fo_Hz = st.text_input('MDVP_Fo(Hz)')
     MDVP_Fhi_Hz = st.text_input('MDVP_Fhi(Hz)')
@@ -96,17 +86,15 @@ def main():
     spread2 = st.text_input('spread2')
     D2 = st.text_input('D2')
     PPE = st.text_input('PPE')
-    
+
     # Creating a button for prediction
-    if st.button('perkison Disease Test Result'):
+    if st.button('Parkinson\'s Disease Test Result'):
         try:
-            diagnosis = perkison_disease_prediction([MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter_percent, MDVP_Jitter_Abs, MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer, MDVP_Shimmer_dB, Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE])
+            input_data = [MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter_percent, MDVP_Jitter_Abs, MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer, MDVP_Shimmer_dB, Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
+            diagnosis = parkinsons_disease_prediction(input_data)
             st.success(diagnosis)
         except ValueError:
             st.error("Please enter valid numeric values.")
-        
+
 if __name__ == '__main__':
     main()
-    
-    
-    

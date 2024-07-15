@@ -25,6 +25,7 @@ def download_file(url, filename):
         response.raise_for_status()
         with open(filename, 'wb') as f:
             f.write(response.content)
+        st.write(f"Downloaded {filename} successfully")
     except requests.exceptions.RequestException as e:
         st.error(f"Failed to download {filename} from {url}: {e}")
 
@@ -33,13 +34,16 @@ parkinsons_model_url = "https://github.com/mohanalytic/project-deployment/blob/0
 
 # Download model files if they do not exist
 if not os.path.exists('parkinsons_model.pkl'):
+    st.write("Downloading model file...")
     download_file(parkinsons_model_url, 'parkinsons_model.pkl')
 
 # Check if model files exist and load them
 try:
     if os.path.exists('parkinsons_model.pkl'):
+        st.write("Loading model file...")
         with open('parkinsons_model.pkl', 'rb') as file:
             parkinsons_model = pickle.load(file)
+        st.write("Model loaded successfully")
     else:
         st.error("parkinsons_model.pkl not found")
 except Exception as e:
@@ -47,6 +51,9 @@ except Exception as e:
 
 # Creating a function for prediction
 def parkinsons_disease_prediction(input_data):
+    st.write("Predicting...")
+    st.write(f"Input data: {input_data}")
+
     # Change the input data into numpy array
     try:
         input_data_as_numpy_array = np.asarray(input_data, dtype=float)
@@ -54,11 +61,15 @@ def parkinsons_disease_prediction(input_data):
         st.error(f"Error converting input data to numpy array: {e}")
         return None
 
+    st.write(f"Input data as numpy array: {input_data_as_numpy_array}")
+
     # Reshape the numpy array as we are predicting for only one instance
     input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
+    st.write(f"Input data reshaped: {input_data_reshaped}")
 
     try:
         prediction = parkinsons_model.predict(input_data_reshaped)
+        st.write(f"Prediction: {prediction}")
     except Exception as e:
         st.error(f"Error during model prediction: {e}")
         return None
@@ -101,6 +112,7 @@ def main():
     if st.button('Parkinson\'s Disease Test Result'):
         try:
             input_data = [inputs[key] for key in inputs]
+            st.write(f"Collected input data: {input_data}")
             diagnosis = parkinsons_disease_prediction(input_data)
             if diagnosis:
                 st.success(diagnosis)

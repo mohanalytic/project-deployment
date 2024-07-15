@@ -8,8 +8,49 @@ Created on Wed Jul 10 12:16:52 2024
 import numpy as np
 import pickle
 import streamlit as st
+import os
+import requests
 
-loaded_model=pickle.load(open('C:/Users/USER/OneDrive/Desktop/machine/parkinsons_model.pkl', 'rb'))
+# Check for scikit-learn installation
+try:
+    import sklearn
+    st.write(f"Scikit-learn version: {sklearn.__version__}")
+except ImportError:
+    st.error("Scikit-learn is not installed. Please check your requirements.txt file.")
+
+# Function to download files from GitHub
+def download_file(url, filename):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        with open(filename, 'wb') as f:
+            f.write(response.content)
+    except requests.exceptions.RequestException as e:
+        st.error(f"Failed to download {filename} from {url}: {e}")
+
+# URLs of the model files on GitHub
+parkinsons_model_url = "https://github.com/mohanalytic/project-deployment/blob/072e96e48abdc3b471a80a84b8604f61fa50a42b/parkinsons_model.pkl"
+
+# Download model files if they do not exist
+
+if not os.path.exists('parkinsons_model.pkl'):
+    download_file(parkinsons_model_url, 'parkinsons_model.pkl')
+
+# Check if model files exist and load them
+try:
+
+    
+
+        
+    if os.path.exists('parkinsons_model.pkl'):
+        parkinsons_model = pickle.load(open('parkinsons_model.pkl', 'rb'))
+    else:
+        st.error("parkinsons_model.pkl not found")
+except Exception as e:
+    st.error(f"Error loading model files: {e}")
+
+
+
 
 # Creating a function for prediction
 def perkison_disease_prediction(input_data):

@@ -38,7 +38,8 @@ if not os.path.exists('parkinsons_model.pkl'):
 # Check if model files exist and load them
 try:
     if os.path.exists('parkinsons_model.pkl'):
-        parkinsons_model = pickle.load(open('parkinsons_model.pkl', 'rb'))
+        with open('parkinsons_model.pkl', 'rb') as file:
+            parkinsons_model = pickle.load(file)
     else:
         st.error("parkinsons_model.pkl not found")
 except Exception as e:
@@ -47,12 +48,20 @@ except Exception as e:
 # Creating a function for prediction
 def parkinsons_disease_prediction(input_data):
     # Change the input data into numpy array
-    input_data_as_numpy_array = np.asarray(input_data, dtype=float)
+    try:
+        input_data_as_numpy_array = np.asarray(input_data, dtype=float)
+    except ValueError as e:
+        st.error(f"Error converting input data to numpy array: {e}")
+        return None
 
     # Reshape the numpy array as we are predicting for only one instance
     input_data_reshaped = input_data_as_numpy_array.reshape(1, -1)
 
-    prediction = parkinsons_model.predict(input_data_reshaped)
+    try:
+        prediction = parkinsons_model.predict(input_data_reshaped)
+    except Exception as e:
+        st.error(f"Error during model prediction: {e}")
+        return None
 
     if prediction[0] == 0:
         return 'The Person does not have Parkinson\'s Disease'
@@ -64,37 +73,39 @@ def main():
     st.title('Parkinson\'s Disease Prediction Web App')
 
     # Getting input data from user
-    MDVP_Fo_Hz = st.text_input('MDVP_Fo(Hz)')
-    MDVP_Fhi_Hz = st.text_input('MDVP_Fhi(Hz)')
-    MDVP_Flo_Hz = st.text_input('MDVP_Flo(Hz)')
-    MDVP_Jitter_percent = st.text_input('MDVP_Jitter(%)')
-    MDVP_Jitter_Abs = st.text_input('MDVP_Jitter(Abs)')
-    MDVP_RAP = st.text_input('MDVP_RAP')
-    MDVP_PPQ = st.text_input('MDVP_PPQ')
-    Jitter_DDP = st.text_input('Jitter_DDP')
-    MDVP_Shimmer = st.text_input('MDVP_Shimmer')
-    MDVP_Shimmer_dB = st.text_input('MDVP_Shimmer(dB)')
-    Shimmer_APQ3 = st.text_input('Shimmer_APQ3')
-    Shimmer_APQ5 = st.text_input('Shimmer_APQ5')
-    MDVP_APQ = st.text_input('MDVP_APQ')
-    Shimmer_DDA = st.text_input('Shimmer_DDA')
-    NHR = st.text_input('NHR')
-    HNR = st.text_input('HNR')
-    RPDE = st.text_input('RPDE')
-    DFA = st.text_input('DFA')
-    spread1 = st.text_input('spread1')
-    spread2 = st.text_input('spread2')
-    D2 = st.text_input('D2')
-    PPE = st.text_input('PPE')
+    inputs = {}
+    inputs['MDVP_Fo_Hz'] = st.text_input('MDVP_Fo(Hz)')
+    inputs['MDVP_Fhi_Hz'] = st.text_input('MDVP_Fhi(Hz)')
+    inputs['MDVP_Flo_Hz'] = st.text_input('MDVP_Flo(Hz)')
+    inputs['MDVP_Jitter_percent'] = st.text_input('MDVP_Jitter(%)')
+    inputs['MDVP_Jitter_Abs'] = st.text_input('MDVP_Jitter(Abs)')
+    inputs['MDVP_RAP'] = st.text_input('MDVP_RAP')
+    inputs['MDVP_PPQ'] = st.text_input('MDVP_PPQ')
+    inputs['Jitter_DDP'] = st.text_input('Jitter_DDP')
+    inputs['MDVP_Shimmer'] = st.text_input('MDVP_Shimmer')
+    inputs['MDVP_Shimmer_dB'] = st.text_input('MDVP_Shimmer(dB)')
+    inputs['Shimmer_APQ3'] = st.text_input('Shimmer_APQ3')
+    inputs['Shimmer_APQ5'] = st.text_input('Shimmer_APQ5')
+    inputs['MDVP_APQ'] = st.text_input('MDVP_APQ')
+    inputs['Shimmer_DDA'] = st.text_input('Shimmer_DDA')
+    inputs['NHR'] = st.text_input('NHR')
+    inputs['HNR'] = st.text_input('HNR')
+    inputs['RPDE'] = st.text_input('RPDE')
+    inputs['DFA'] = st.text_input('DFA')
+    inputs['spread1'] = st.text_input('spread1')
+    inputs['spread2'] = st.text_input('spread2')
+    inputs['D2'] = st.text_input('D2')
+    inputs['PPE'] = st.text_input('PPE')
 
     # Creating a button for prediction
     if st.button('Parkinson\'s Disease Test Result'):
         try:
-            input_data = [MDVP_Fo_Hz, MDVP_Fhi_Hz, MDVP_Flo_Hz, MDVP_Jitter_percent, MDVP_Jitter_Abs, MDVP_RAP, MDVP_PPQ, Jitter_DDP, MDVP_Shimmer, MDVP_Shimmer_dB, Shimmer_APQ3, Shimmer_APQ5, MDVP_APQ, Shimmer_DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
+            input_data = [inputs[key] for key in inputs]
             diagnosis = parkinsons_disease_prediction(input_data)
-            st.success(diagnosis)
-        except ValueError:
-            st.error("Please enter valid numeric values.")
+            if diagnosis:
+                st.success(diagnosis)
+        except ValueError as e:
+            st.error(f"Please enter valid numeric values: {e}")
 
 if __name__ == '__main__':
     main()

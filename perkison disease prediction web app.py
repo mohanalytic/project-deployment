@@ -109,7 +109,7 @@ def main():
     inputs['PPE'] = st.text_input('PPE')
 
     # Creating a button for prediction
-    if st.button('Parkinson\'s Disease Test Result'):
+  if st.button('Parkinson\'s Disease Test Result'):
         try:
             input_data = [inputs[key] for key in inputs]
             st.write(f"Collected input data: {input_data}")

@@ -4,7 +4,6 @@ Created on Wed Jul 10 12:16:52 2024
 
 @author: USER
 """
-
 import numpy as np
 import pickle
 import streamlit as st
@@ -109,7 +108,7 @@ def main():
     inputs['PPE'] = st.text_input('PPE')
 
     # Creating a button for prediction
-  if st.button('Parkinson\'s Disease Test Result'):
+    if st.button('Parkinson\'s Disease Test Result'):
         try:
             input_data = [inputs[key] for key in inputs]
             st.write(f"Collected input data: {input_data}")
@@ -121,3 +120,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
